@@ -24,11 +24,11 @@ $prefix = 'A00690683';
     <p>
       <label>BCIT course:</label><br>
       <label><input type="radio" name="<?php echo esc_attr($prefix); ?>_platform" value="MySQL" required> MySQL</label><br>
-      <label><input type="radio" name="<?php echo esc_attr($prefix); ?>_platform" value="Android"> Android</label><br>
-      <label><input type="radio" name="<?php echo esc_attr($prefix); ?>_platform" value="Javascript"> Javascript</label>
+      <label><input type="radio" name="<?php echo esc_attr($prefix); ?>_platform" value="Android" required> Android</label><br>
+      <label><input type="radio" name="<?php echo esc_attr($prefix); ?>_platform" value="Javascript" required> Javascript</label>
     </p>
 
-    <input type="submit" value="Submit">
+    <input type="submit" value="SUBMIT">
   </form>
 
 <?php
@@ -64,7 +64,9 @@ wp_enqueue_script('bcit-pie', get_stylesheet_directory_uri() . '/pie.js', ['high
 ?>
 
 <script>
-  highcharts_pie(<?php echo get_platforms_data($prefix); ?>);
+  document.addEventListener('DOMContentLoaded', function() {
+    highcharts_pie(<?php echo get_platforms_data($prefix); ?>);
+  });
 </script>
 
 <?php get_footer(); ?>
@@ -93,9 +95,29 @@ function get_platforms_data($prefix) {
     }
   }
 
+  $total = array_sum($counts);
+  
+  // Calculate percentages
+  $percentages = [];
+  if ($total > 0) {
+    $percentages = [
+      'MySQL'      => round(($counts['MySQL'] / $total) * 100, 1),
+      'Android'    => round(($counts['Android'] / $total) * 100, 1),
+      'Javascript' => round(($counts['Javascript'] / $total) * 100, 1),
+    ];
+  } else {
+    $percentages = [
+      'MySQL'      => 0.0,
+      'Android'    => 0.0,
+      'Javascript' => 0.0,
+    ];
+  }
+
+  // Return formatted data matching the image format
   return wp_json_encode([
-    ['name' => 'MySQL',      'y' => $counts['MySQL']],
-    ['name' => 'Android',    'y' => $counts['Android']],
-    ['name' => 'Javascript', 'y' => $counts['Javascript']],
+    ['name' => 'Javascript', 'y' => $percentages['Javascript'], 'label' => 'Javascript: ' . $percentages['Javascript'] . ' %'],
+    ['name' => 'Android', 'y' => $percentages['Android'], 'label' => 'Android: ' . $percentages['Android'] . ' %'],
+    ['name' => 'MySQL', 'y' => $percentages['MySQL'], 'label' => 'MySQL: ' . $percentages['MySQL'] . ' %']
   ]);
 }
+?>
