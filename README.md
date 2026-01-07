@@ -1,4 +1,4 @@
-# BCIT Course Platform Survey
+# Course Platform Survey
 
 A WordPress template that collects user preferences for BCIT courses and displays results in a pie chart.
 
@@ -40,3 +40,4 @@ The application displays:
 
 ## Security
 - WordPress
+
